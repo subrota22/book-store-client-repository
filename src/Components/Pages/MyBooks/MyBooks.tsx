@@ -20,7 +20,7 @@ const MyBooks = () => {
     const [loadingPage, setLoadingPage] = useState<Boolean>(true);
     const [data, setData]: any = useState([]);
     const { user } = useContext(AuthProvider);
-    const uri = `http://localhost:4000/myBooks?page=${page}&size=${pageSize}&email=${user?.email}`;
+    const uri = `https://books-libarary.vercel.app/myBooks?page=${page}&size=${pageSize}&email=${user?.email}`;
     //
     const { refetch } = useQuery({
         queryKey: [page, pageSize, user?.email],
@@ -40,7 +40,7 @@ const MyBooks = () => {
     }
 
     const handleDelete: any = (id: any) => {
-        fetch(`http://localhost:4000/deleteBooks?id=${id}&email=${user?.email}`, {
+        fetch(`https://books-libarary.vercel.app/deleteBooks?id=${id}&email=${user?.email}`, {
             method: "DELETE",
             headers: {
                 authentication: `Bearer ${localStorage.getItem("book-store")} `

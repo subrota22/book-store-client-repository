@@ -12,7 +12,7 @@ const AllUsers = () => {
     const [loadingPage, setLoadingPage] = useState<Boolean>(true);
     const [data, setData]: any = useState([]);
 
-    const uri = `http://localhost:4000/users?page=${page}&size=${pageSize}`;
+    const uri = `https://books-libarary.vercel.app/users?page=${page}&size=${pageSize}`;
     //
     useQuery({
         queryKey: [page, pageSize],
@@ -66,7 +66,7 @@ const AllUsers = () => {
                     searchData?.length === 0 && <>
                         {
                             data?.map((book: any) =>
-                                <div className="card w-96  h-auto bg-base-100 shadow-xl" key={book?._id}  data-aos="zoom-in">
+                                <div className="card w-96 ourUserCard  h-auto bg-base-100 shadow-xl" key={book?._id}  data-aos="zoom-in">
                                     <figure><img src={book?.profileImage ? book?.profileImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
                                         className="h-60 w-full" alt="Book" /></figure>
                                     <div className="card-body">
@@ -83,7 +83,7 @@ const AllUsers = () => {
                     searchData?.length !== 0 && <>
                         {
                             searchData?.map((book: any) =>
-                            <div className="card w-96  h-auto bg-base-100 shadow-xl" key={book?._id} data-aos="zoom-in">
+                            <div className="card w-96 ourUserCard  h-auto bg-base-100 shadow-xl" key={book?._id} data-aos="zoom-in">
                             <figure><img src={book?.profileImage ? book?.profileImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
                                 className="h-60 w-full" alt="Book" /></figure>
                             <div className="card-body">

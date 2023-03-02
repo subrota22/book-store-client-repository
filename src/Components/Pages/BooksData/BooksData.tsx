@@ -13,7 +13,7 @@ const BooksInfo = () => {
     const [loadingPage, setLoadingPage] = useState<Boolean>(true);
     const [data, setData]: any = useState([]);
 
-    const uri = `http://localhost:4000/getBooks?page=${page}&size=${pageSize}`;
+    const uri = `https://books-libarary.vercel.app/getBooks?page=${page}&size=${pageSize}`;
     //
     useQuery({
         queryKey: [page, pageSize],

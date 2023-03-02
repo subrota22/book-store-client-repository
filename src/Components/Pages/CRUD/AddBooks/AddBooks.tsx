@@ -40,7 +40,7 @@ const AddBooks = () => {
             date: new Date()
         }
         //send post data 
-        const uri = `http://localhost:4000/addBook`;
+        const uri = `https://books-libarary.vercel.app/addBook`;
         if(!name){
             toast.info("Please provide your book image") ;
             setLoading(false) ;

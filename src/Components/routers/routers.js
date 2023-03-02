@@ -38,7 +38,7 @@ export const routers = createBrowserRouter([
              
                     {
                         path:"/edit/:id",
-                        loader: ({params}) => fetch(`http://localhost:4000/bookData/${params.id}`)
+                        loader: ({params}) => fetch(`https://books-libarary.vercel.app/bookData/${params.id}`)
                         .then(res => res.json())
                         .then(data => data ) 
                         , element:<EditBooks></EditBooks>
@@ -54,7 +54,7 @@ export const routers = createBrowserRouter([
                     },
                     {
                      path:"/details/:id" ,   element:<ShowDetails></ShowDetails> ,
-                     loader: ({params}) => fetch(`http://localhost:4000/bookData/${params.id}`)
+                     loader: ({params}) => fetch(`https://books-libarary.vercel.app/bookData/${params.id}`)
                      .then(res => res.json())
                      .then(data => data ) 
                     } , 

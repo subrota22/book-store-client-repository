@@ -39,7 +39,7 @@ const EditBooks = () => {
             date: new Date()
         }
         //send post data 
-        const uri = `http://localhost:4000/editBook?id=${bookDataGet._id}&email=${user?.email}`;
+        const uri = `https://books-libarary.vercel.app/editBook?id=${bookDataGet._id}&email=${user?.email}`;
 
         fetch(`https://api.imgbb.com/1/upload?key=${image_bb_key}`, {
             method: "POST",

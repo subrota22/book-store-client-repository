@@ -20,7 +20,7 @@ const Login = () => {
   const createMongoDBUser = (userData: any) => {
     console.log("userData", userData);
     setLoading(true);
-    fetch("http://localhost:4000/users", {
+    fetch("https://books-libarary.vercel.app/users", {
       method: "POST",
       headers: {
         'content-type': 'application/json',

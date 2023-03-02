@@ -8,7 +8,7 @@ const ShowDetails = () => {
   const bookDataGet: any = useLoaderData();
   const [loadingPage, setLoadingPage] = useState<Boolean>(true);
   const [data, setData]: any = useState({});
-  const uri = `http://localhost:4000/bookData/${bookDataGet._id}`;
+  const uri = `https://books-libarary.vercel.app/bookData/${bookDataGet._id}`;
   useQuery({
     queryKey: [bookDataGet._id],
     queryFn: () => fetch(uri, { method: "GET" })

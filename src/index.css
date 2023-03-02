@@ -18,6 +18,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* card hover effect  */
+.card:hover{
+  box-shadow: 3px 0px 5px 0px #0D2D92;
+  transition:box-shadow 0.3s ;
+}
+.ourUserCard{
+  transform: scaleX(0.8) rotateY(360deg);
+}
 /* scrollbar  */
 body::-webkit-scrollbar{
 width: 14px;

@@ -54,7 +54,9 @@ const AllUsers = () => {
                 data?.length !== 0 && <>
 
             <div className="searchDiv my-8 flex justify-center ">
-                <input type="search" placeholder='Search by book name' onChange={(e) => handleSearchFeild(e.target.value)} className='input input-primary w-80' />
+                <input type="search" placeholder='Search by name example (Subrota)' 
+                onChange={(e) => handleSearchFeild(e.target.value)} className='input input-primary w-full ml-10' />
+          <i className="fa-solid fa-magnifying-glass text-4xl ml-2 mr-6 btn btn-primary pb-7 pt-1 px-3"></i>
             </div>
             {
                 data?.length === 0 &&

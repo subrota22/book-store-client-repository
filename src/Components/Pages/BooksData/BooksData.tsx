@@ -52,7 +52,9 @@ const BooksInfo = () => {
             {
                 data?.length !== 0 && <>
                     <div className="searchDiv my-8 flex justify-center ">
-                        <input type="search" placeholder='Search by book name' onChange={(e) => handleSearchFeild(e.target.value)} className='input input-primary w-80' />
+                        <input type="search" placeholder='Search by book name Example (Calculas)'
+                            onChange={(e) => handleSearchFeild(e.target.value)} className='input input-primary w-full ml-10' />
+                        <i className="fa-solid fa-magnifying-glass text-4xl ml-2 mr-6 btn btn-primary pb-7 pt-1 px-3"></i>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 m-5 gap-7">
@@ -60,7 +62,7 @@ const BooksInfo = () => {
                             searchData?.length === 0 && <>
                                 {
                                     data?.map((book: any) =>
-                                        <div className="card w-96  h-auto bg-base-100 shadow-xl" key={book?._id}  data-aos="zoom-in">
+                                        <div className="card w-96  h-auto bg-base-100 shadow-xl" key={book?._id} data-aos="zoom-in">
                                             <figure><img src={book?.bookImage ? book?.bookImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
                                                 className="h-60 w-full" alt="Book" /></figure>
                                             <div className="card-body">
@@ -83,7 +85,7 @@ const BooksInfo = () => {
                             searchData?.length !== 0 && <>
                                 {
                                     searchData?.map((book: any) =>
-                                        <div className="card w-96 h-auto bg-base-100 shadow-xl" key={book?._id}  data-aos="zoom-in">
+                                        <div className="card w-96 h-auto bg-base-100 shadow-xl" key={book?._id} data-aos="zoom-in">
                                             <figure><img src={book?.bookImage ? book?.bookImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
                                                 className="h-60 w-full" alt="Book" /></figure>
                                             <div className="card-body">

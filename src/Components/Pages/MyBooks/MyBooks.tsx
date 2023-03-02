@@ -126,7 +126,7 @@ const MyBooks = () => {
 
                 <div className="searchDiv my-8 flex justify-center ">
                     <input type="search" placeholder='Search by book name Example (Calculas)'
-                        onChange={(e) => handleSearchFeild(e.target.value)} className='input input-primary w-full ml-10' />
+                        onChange={(e) => handleSearchFeild(e.target.value)} className='input input-primary w-full ml-5' />
                     <i className="fa-solid fa-magnifying-glass text-4xl ml-2 mr-6 btn btn-primary pb-7 pt-1 px-3"></i>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 m-5 gap-7">

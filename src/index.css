@@ -18,8 +18,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* scrollbar  */
+body::-webkit-scrollbar{
+width: 14px;
+background-color:#0F0D92;
+}
+body::-webkit-scrollbar-thumb{
+  background-color:#260D46;
+  border-radius: 20px;
+  }
+/* website rwd  */
 
-/* .position{
-position: sticky;
-top: 120px;
-} */
+@media (max-width:900px) {
+  .navLinkResponsive{display: block;  }
+  .Navphoto{display: block;}
+}
+
+@media (max-width:600px) {
+  .navLinkResponsive{display: none;  }
+  .Navphoto{display: none;}
+}

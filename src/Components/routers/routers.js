@@ -9,7 +9,9 @@ import Register from "../Pages/Register/Register";
 import ResetPassword from "../Pages/ResetPassword/ResetPassword";
 import ShowDetails from "../Pages/CRUD/ShowDetails/ShowDetails";
 import EditBooks from "../Pages/CRUD/EditBooks/EditBooks" ;
-
+import AllBooks from "../Pages/CRUD/EditBooks/Pagination/AllBooks" ;
+import Profile from "../Pages/Profile/Profile" ;
+import AllUsers from "../Pages/AllUsers/AllUsers" ;
 export const routers = createBrowserRouter([
     {
         path:"/", errorElement:<h2 style={{textAlign:"center" , height:"100vh", fontSize:"56px", paddingTop:"120px" , color:"red"}}> You have an error : </h2>, children:[
@@ -30,6 +32,9 @@ export const routers = createBrowserRouter([
                     {
                         path:"/add-books", element:<AddBooks></AddBooks>
                     },
+                    {
+                        path:"/all-books", element:<AllBooks></AllBooks>
+                    },
              
                     {
                         path:"/edit/:id",
@@ -40,6 +45,12 @@ export const routers = createBrowserRouter([
                     },
                     {
                         path:"/reset-password", element:<ResetPassword></ResetPassword>
+                    },
+                    {
+                        path:"/profile", element:<Profile></Profile>
+                    },
+                    {
+                        path:"/our-users", element:<AllUsers></AllUsers>
                     },
                     {
                      path:"/details/:id" ,   element:<ShowDetails></ShowDetails> ,

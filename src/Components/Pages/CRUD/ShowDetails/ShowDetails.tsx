@@ -1,112 +1,40 @@
-
-import { Link, useLoaderData, useNavigate } from 'react-router-dom';
-import gql from 'graphql-tag';
-// import { Mutation } from 'react-apollo';
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import { toast } from 'react-toastify';
+import { useLoaderData } from 'react-router-dom';
 import PageLoader from 'Components/Shares/PageLoader/PageLoader';
-import { AuthProvider } from 'UserContext/UserContext';
-import { useContext } from 'react';
-
-interface BooksData {
-  books: BooksData[];
-  _id: String;
-  isbn: String;
-  title: String;
-  author: String;
-  description: String;
-  published_year: any;
-  publisher: String;
-  updated_date: any;
-  book: any;
-  data: any;
-}
-
-interface BooksDataVars {
-  bookId: any;
-}
-
-const GET_BOOK = gql`
-    query book($bookId: String) {
-        book(id: $bookId) {
-            _id
-            isbn
-            title
-            author
-            description
-            published_year
-            publisher
-            updated_date
-        }
-    }
-`;
-
-
-const DELETE_BOOK = gql`
-mutation removeBook($id: String!) {
-removeBook(id:$id) {
-  _id
-}
-}
-`;
-
-
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet';
 
 const ShowDetails = () => {
-
   const bookDataGet: any = useLoaderData();
-  const { loading, data } = useQuery<BooksData, BooksDataVars>(
-    GET_BOOK,
-    { variables: { bookId: bookDataGet._id } }
-  );
+  const [loadingPage, setLoadingPage] = useState<Boolean>(true);
+  const [data, setData]: any = useState({});
+  const uri = `http://localhost:4000/bookData/${bookDataGet._id}`;
+  useQuery({
+    queryKey: [bookDataGet._id],
+    queryFn: () => fetch(uri, { method: "GET" })
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoadingPage(false);
+      })
+  })
 
-  const {user} :any =  useContext(AuthProvider) ;
-
-  const [deleteSingleBook] = useMutation(DELETE_BOOK);
-  const navigate = useNavigate();
   return (
     <>
+            <Helmet> <title>  Book details  </title> </Helmet>
       <div>
-        <h3 className='text-3xl font-bold text-center my-8'> Book name:  {data?.book.title}   </h3>
-        {loading ? (
+        <h3 className='text-3xl font-bold text-center my-8'> Book name:  {data.bookName ? data.bookName : "Book name not found !!"}   </h3>
+        {loadingPage ? (
           <PageLoader></PageLoader>
         ) : (
-          <div className="overflow-x-auto">
-
-            <div className="card h-auto bg-base-100 shadow-2xl  my-10  mx-auto" style={{ "width": "50%" }}>
-              <figure><img src="https://thumbs.dreamstime.com/b/stack-books-isolated-white-background-34637153.jpg" alt="Shoes" /></figure>
-              <div className="card-body">
-                <h2 className="card-title"> <span className="text-info"> Book name : </span>  {data?.book.title}    </h2>
-                <div> <span className="text-info">Author: </span> {data?.book?.author}</div>
-                <div> <span className="text-info">Isbn: </span>{data?.book?.isbn}</div>
-                <p> <span className="text-info">Descrispantion:  </span> {data?.book?.description}</p>
-                <p> <span className="text-info">Published year: </span> {data?.book?.published_year}</p>
-                <p> <span className="text-info">Publisher: </span>{data?.book?.publisher}</p>
-                <p> <span className="text-info">Updated date: </span> {data?.book?.updated_date}</p>
-              {  user.uid && <div className="card-actions justify-end">
-                  <div>
-                    <Link to={`/edit/${bookDataGet._id}`} className="btn btn-success text-white px-9 mx-2">Edit</Link>&nbsp;
-                  </div>
-                  <div >
-                    <form
-                      onSubmit={e => {
-                        e.preventDefault();
-                        const confirm = window.confirm(`Are you want to delete ${bookDataGet?.title} `)
-                        if (confirm) {
-                          deleteSingleBook({ variables: { id: bookDataGet._id } });
-                          toast.info(`Your  ${bookDataGet?.title} is deleted !! `);
-                          navigate("/");
-                        } else {
-                          toast.info(`Your  ${bookDataGet?.title} book safe now !! `);
-                        }
-                      }}>
-
-                      <button type="submit" className="btn btn-primary text-white">Delete</button>
-                    </form>
-
-                  </div>
-                </div>}
-              </div>
+          <div className="card  bg-base-100 shadow-xl h-auto mx-auto mb-40" key={data?._id} style={{ width: "60%" }}>
+            <figure><img src={data?.bookImage ? data?.bookImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
+              className="h-60 w-full" alt="Book" /></figure>
+            <div className="card-body">
+              <h2 className="card-title"> <span className="text-info">Book name : </span> {data?.bookName ? data?.bookName : "book name not found"}</h2>
+              <h2 className="card-title"><span className="text-info">Author : </span>{data?.author ? data?.author : "author not found"}</h2>
+              <p><span className="text-info">Description : </span>{data?.description ? data?.description?.length > 32 ?
+                data?.description?.slice(0, 32) + "...." : data?.description : "book description not found"}</p>
             </div>
           </div>
         )}

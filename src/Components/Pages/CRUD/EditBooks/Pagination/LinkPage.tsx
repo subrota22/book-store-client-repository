@@ -1,12 +1,24 @@
-import { useState } from 'react';
+import { gql } from 'graphql-request';
+import React, { useState } from 'react';
+import { useMutation } from '@apollo/react-hooks';
 const LinkPage = () => {
-    const [count, setCount] = useState(0);
+    const [count, setCount] = useState(30);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(6);
     let pages = Math.ceil(count / pageSize);
 
+    const SEND_PAGES:any = gql`
+    mutation booksQuery($page: Int! , $size:Int!) {
+        booksQuery(page:$page, size:$size) {
+      _id
+    }
+    }
+    `;
+    const [sendPage , {error , loading , data} ] = useMutation(SEND_PAGES);
 
-
+    React.useEffect(() => {
+        sendPage({ variables: { page:page, size:pageSize } });
+    }, [page  , pageSize , sendPage ]);
     return (
         <>
              {/* pagination start  */}
@@ -19,8 +31,8 @@ const LinkPage = () => {
                         <button
                             className={`btn btn-primary text-white fs-5 fw-bold py-2 px-4 mx-3 ${pages === 1 && 'hidden'}`}
                             onClick={() => setPage(page - 1)}>
-                          <i class="fa-solid fa-chevron-left text-white text-lg font-bold"></i>
-                            <i class="fa-solid fa-chevron-left text-white text-lg font-bold"></i>
+                          <i className="fa-solid fa-chevron-left text-white text-lg font-bold"></i>
+                            <i className="fa-solid fa-chevron-left text-white text-lg font-bold"></i>
                         </button>
                     }
 
@@ -40,13 +52,13 @@ const LinkPage = () => {
                         <button
                             className={`btn btn-primary text-white fs-5 fw-bold py-2 px-4 mx-3 ${pages === 1 &&  'hidden'}`}
                             onClick={() => setPage(page + 1)}>
-                             <i class="fa-solid fa-chevron-right text-white text-lg font-bold"></i>
-                             <i class="fa-solid fa-chevron-right text-white text-lg font-bold"></i>
+                             <i className="fa-solid fa-chevron-right text-white text-lg font-bold"></i>
+                             <i className="fa-solid fa-chevron-right text-white text-lg font-bold"></i>
                         </button>
                     }
 
                     {/* page size set  */}
-                    <select className='btn btn-success text-white  fw-bold py-2 px-4 mx-3' onChange={(e) => setPageSize(e.target.value)}>
+                    <select className='btn btn-success text-white  fw-bold py-2 px-4 mx-3' onChange={(e:any) => setPageSize(e.target.value)}>
                         <option className='text-info fw-bold' selected disabled> Select page size. </option>
                         <option value="2">2</option>
                         <option value="4">4</option>

@@ -1,17 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-
-import errorDeleteMessage from "Components/Shares/deleteMessage/errorDeleteMessage";
-import successDeleteMessage from "Components/Shares/deleteMessage/successDeleteMessage";
 import PageLoader from "Components/Shares/PageLoader/PageLoader";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
-import { Typewriter } from "react-simple-typewriter";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import { AuthProvider } from "UserContext/UserContext";
+import { Typewriter } from 'react-simple-typewriter';
 
-const MyBooks = () => {
+const AllBooks = () => {
     const [searchData, setSearchData]: any = useState("");
     const [count, setCount] = useState(0);
     const [page, setPage] = useState(0);
@@ -19,100 +13,35 @@ const MyBooks = () => {
     let pages = Math.ceil(count / pageSize);
     const [loadingPage, setLoadingPage] = useState<Boolean>(true);
     const [data, setData]: any = useState([]);
-    const { user } = useContext(AuthProvider);
-    const uri = `http://localhost:4000/myBooks?page=${page}&size=${pageSize}&email=${user?.email}`;
+
+    const uri = `http://localhost:4000/getBooks?page=${page}&size=${pageSize}`;
     //
-    const { refetch } = useQuery({
-        queryKey: [page, pageSize, user?.email],
-        queryFn: () => fetch(uri, { method: "GET" })
-            .then(res => res.json())
-            .then(data => {
-                setCount(data?.count);
-                setData(data?.data);
-                setLoadingPage(false);
-            })
-    })
+    useQuery({ queryKey: [page , pageSize],
+     queryFn: () =>  fetch(uri, { method: "GET" })
+        .then(res => res.json())
+        .then(data => {
+            setCount(data?.count);
+            setData(data?.data);
+            setLoadingPage(false);
+        })
+ })
 
     //search data
     const handleSearchFeild = (searchText: any) => {
-        const findData: any = data?.filter((bookData: any) => bookData?.bookName?.toLowerCase().includes(searchText?.toLowerCase()));
+        const findData: any = data?.filter((bookData: any) => bookData?.bookName?.toLowerCase().includes(searchText?.toLowerCase()) );
         setSearchData(findData);
-    }
-
-    const handleDelete: any = (id: any) => {
-        fetch(`http://localhost:4000/deleteBooks?id=${id}&email=${user?.email}`, {
-            method: "DELETE",
-            headers: {
-                authentication: `Bearer ${localStorage.getItem("book-store")} `
-            }
-        })
-            .then(res => {
-
-                if (res.status === 403) {
-                    toast.warning("  😩 😩 You do have'nt access to delete this data. ");
-                } else {
-                    return res.json();
-                }
-            })
-            .then(getData => {
-                if (getData.acknowledged) {
-                    refetch();
-                    successDeleteMessage();
-                }
-
-            }).catch(error => errorDeleteMessage(error))
-    }
-
-
-    //deLeted confirm
-    const handleDeleteConfirm: any = (id: any) => {
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-info text-white mx-2 px-4 py-2 shadow-lg  p-3 mb-5 bg-body-tertiary rounded',
-                cancelButton: 'btn btn-primary mx-2 px-4 py-2 shadow-lg  p-3 mb-5 bg-body-tertiary rounded',
-            },
-            buttonsStyling: false
-        })
-        swalWithBootstrapButtons.fire({
-            title: 'Are you sure?',
-            text: `You won't be able to revert this data`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it ! ',
-            cancelButtonText: 'No, cancel ! ',
-            reverseButtons: true,
-            background: "#40073B",
-            color: "#EACAE8",
-            padding: "12px",
-            timer: 12000,
-        }).then((result) => {
-
-            if (result.isConfirmed) {
-                return handleDelete(id);
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                swalWithBootstrapButtons.fire({
-                    title: 'Cancelled ',
-                    text: `Your imaginary data is safe now !!`,
-                    icon: 'error',
-                    background: "#40073B",
-                    color: "#EACAE8",
-                    timer: 3000,
-                }
-                );
-            }
-        })
     }
 
     if (loadingPage) return <PageLoader></PageLoader>
     return (
         <>
-        <Helmet> <title> My books  </title> </Helmet>
+                <Helmet> <title> All books  </title> </Helmet>
 
-        {
+                {
                 data?.length === 0 &&
                 <h2 className="text-5xl font-extrabold text-info text-center h-screen mt-40">
                     <Typewriter
-                        words={['My books ', 'data', 'not', 'found !!' , 'add some book' , 'to show here...']}
+                        words={[' Books ', 'data', 'not', 'found !!']}
                         loop={Infinity}
                         cursor
                         cursorStyle='_'
@@ -124,7 +53,9 @@ const MyBooks = () => {
             }
 {    data?.length !== 0 &&<>
 
-            <div className="searchDiv my-8 flex justify-center ">
+
+
+    <div className="searchDiv my-8 flex justify-center ">
                 <input type="search" placeholder='Search by book name' onChange={(e) => handleSearchFeild(e.target.value)} className='input input-primary w-80' />
             </div>
 
@@ -133,18 +64,17 @@ const MyBooks = () => {
                     searchData?.length === 0 && <>
                         {
                             data?.map((book: any) =>
-                                <div className="card w-96  h-auto bg-base-100 shadow-xl" key={book?._id}  data-aos="zoom-in">
+                            <div className="card w-96  h-auto bg-base-100 shadow-xl" key={book?._id}  data-aos="zoom-in">
                                     <figure><img src={book?.bookImage ? book?.bookImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
                                         className="h-60 w-full" alt="Book" /></figure>
                                     <div className="card-body">
                                         <h2 className="card-title"> <span className="text-info">Book name : </span> {book?.bookName ? book?.bookName : "book name not found"}</h2>
-                                        <h2 className="card-title"><span className="text-info">Author : </span>{book?.author ? book?.bookName : "author not found"}</h2>
+                                        <h2 className="card-title"><span className="text-info">Author : </span>{book?.author ? book?.author : "author not found"}</h2>
                                         <p><span className="text-info">Description : </span>{book?.description ? book?.description?.length > 32 ?
                                             book?.description?.slice(0, 32) + "...." : book?.description : "book description not found"}</p>
-                                        <div className="card-actions justify-end">
-                                            <Link to={`/edit/${book?._id}`} className="btn btn-primary"> Edit book <i className="fa-solid fa-arrow-right text-white  ml-3"></i> </Link>
-                                            <div className="btn  btn-primary" onClick={() => handleDeleteConfirm(book._id)}> Delete book </div>
-                                        </div>
+                                     <div className="card-actions justify-end">
+                                <Link to={`/details/${book?._id}`} className="btn btn-primary"> Show details<i className="fa-solid fa-arrow-right text-white  ml-3"></i> </Link>
+                                </div>
                                     </div>
                                 </div>
                             )
@@ -156,20 +86,20 @@ const MyBooks = () => {
                     searchData?.length !== 0 && <>
                         {
                             searchData?.map((book: any) =>
-                                <div className="card w-96  h-auto bg-base-100 shadow-xl" key={book?._id}  data-aos="zoom-in">
-                                    <figure><img src={book?.bookImage ? book?.bookImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
-                                        className="h-60 w-full" alt="Book" /></figure>
-                                    <div className="card-body">
-                                        <h2 className="card-title"> <span className="text-info">Book name : </span> {book?.bookName ? book?.bookName : "book name not found"}</h2>
-                                        <h2 className="card-title"><span className="text-info">Author : </span>{book?.author ? book?.bookName : "author not found"}</h2>
-                                        <p><span className="text-info">Description : </span>{book?.description ? book?.description?.length > 32 ?
-                                            book?.description?.slice(0, 32) + "...." : book?.description : "book description not found"}</p>
-                                        <div className="card-actions justify-end">
-                                            <Link to={`/edit/${book?._id}`} className="btn btn-primary"> Edit book <i className="fa-solid fa-arrow-right text-white  ml-3"></i> </Link>
-                                            <div className="btn  btn-primary" onClick={() => handleDeleteConfirm(book._id)}> Delete book </div>
-                                        </div>
-                                    </div>
+                            <div className="card w-96  h-auto bg-base-100 shadow-xl" key={book?._id}  data-aos="zoom-in">
+                            <figure><img src={book?.bookImage ? book?.bookImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
+                                className="h-60 w-full" alt="Book" /></figure>
+                            <div className="card-body">
+                                <h2 className="card-title"> <span className="text-info">Book name : </span> {book?.bookName ? book?.bookName : "book name not found"}</h2>
+                                <h2 className="card-title"><span className="text-info">Author : </span>{book?.author ? book?.author : "author not found"}</h2>
+                                <p><span className="text-info">Description : </span>{book?.description ? book?.description?.length > 32 ?
+                                    book?.description?.slice(0, 32) + "...." : book?.description : "book description not found"}</p>
+                              <div className="card-actions justify-end">
+                                <Link to={`/details/${book?._id}`} className="btn btn-primary"> Show details<i className="fa-solid fa-arrow-right text-white  ml-3"></i> </Link>
                                 </div>
+                            </div>
+                       
+                        </div>
                             )
                         }
                     </>
@@ -241,12 +171,13 @@ const MyBooks = () => {
             }
 
             {/* pagination end  */}
-</>
-}
+            
+            </>}
+
         </>
     );
 }
 
-export default MyBooks;
+export default AllBooks;
 
 

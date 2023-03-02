@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 // import { Mutation } from 'react-apollo';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import PageLoader from 'Components/Shares/PageLoader/PageLoader';
-import LinkPage from "../CRUD/EditBooks/pag/LinkPage";
 
 
 interface BooksData {
@@ -137,7 +136,6 @@ const [sendPageNumbers, {error  }] = useMutation(SEND_PAGE);
 
 
       )}
-      <LinkPage></LinkPage>
     </>
   )
 };

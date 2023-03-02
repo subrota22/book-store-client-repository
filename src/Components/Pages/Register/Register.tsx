@@ -44,7 +44,7 @@ const Register = () => {
     const createMongoDBUser = (userData: any) => {
         setLoading(true);
 
-        fetch("http://localhost:3562/users", {
+        fetch("http://localhost:4000/users", {
             method: "POST",
             headers: {
                 'content-type': 'application/json',
@@ -74,6 +74,11 @@ const Register = () => {
     const onSubmit = (userFormData: any) => {
         //create new user email and password based 
         setLoading(true);
+        if (!name) {
+            toast.info("Please provide your profile picture");
+            setLoading(false) ;
+            return;
+        }
         fetch(`https://api.imgbb.com/1/upload?key=${image_bb_key}`, {
             method: "POST",
             body: formData,
@@ -88,8 +93,8 @@ const Register = () => {
                         updateUserProfile(userFormData.name, profileImage)
                             .then(() => {
                                 navigate("/");
-                                const { name, email, profileImage, role }: any = userFormData;
-                                createMongoDBUser({ name: name, email: email, profileImage: profileImage, role: role });
+                                const { name, email, profileImage }: any = userFormData;
+                                createMongoDBUser({ name: name, email: email, profileImage: profileImage, date: new Date() });
 
                             }).catch((error: any) => {
                                 toast.error(error.message, { position: "top-center" });
@@ -119,9 +124,9 @@ const Register = () => {
                 const name = result?.user?.displayName;
                 const email = result?.user?.email;
                 const profileImage = result?.user?.photoURL;
-                const role = "Buyer";
                 authToken(email);
-                createMongoDBUser({ name: name, email: email, profileImage: profileImage, role: role });
+                createMongoDBUser({ name: name, email: email, profileImage: profileImage, date: new Date() });
+
             })
             .catch((error: any) => {
                 if (error) { setLoading(false) }
@@ -140,9 +145,8 @@ const Register = () => {
                 const name = result?.user?.displayName;
                 const email = result?.user?.email;
                 const profileImage = result?.user?.photoURL;
-                const role = "Buyer";
                 authToken(email);
-                createMongoDBUser({ name: name, email: email, profileImage: profileImage, role: role });
+                createMongoDBUser({ name: name, email: email, profileImage: profileImage, date: new Date() });
 
             })
             .catch((error: any) => {
@@ -168,12 +172,12 @@ const Register = () => {
 
             <div className="hero min-h-96 my-8">
                 <div className="hero-content flex flex-col lg:flex-row">
-                    <div className=''>
+                    <div data-aos="zoom-in-left">
                         <img src="https://i.ibb.co/yRVxQkH/register.png"
-                            alt="register" className='w-full bg-base-100'
+                            alt="register" className='w-full h-screen bg-base-100'
                             style={{ height: "868px" }} />
                     </div>
-                    <div className="card flex-shrink-0 w-full rounded-none  max-w-xl  shadow-md ">
+                    <div className="card flex-shrink-0 w-full rounded-none  max-w-xl  shadow-md"  data-aos="zoom-in-right">
                         <form onSubmit={handleSubmit(onSubmit)} className="card-body w-full text-info">
                             <h2 className='text-2xl text-center my-1 animate-pulse uppercase'>Register now !</h2>
                             <div className="form-control">

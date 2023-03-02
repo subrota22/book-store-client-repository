@@ -1,174 +1,186 @@
-import { Link, useLoaderData } from 'react-router-dom';
-import gql from "graphql-tag";
-import { useMutation, useQuery } from "@apollo/client";
-import { BeatLoader } from 'react-spinners';
-
-
-interface BooksData {
-    books: BooksData[];
-    _id: String;
-    isbn: String;
-    title: String;
-    author: String;
-    description: String;
-    published_year: any;
-    publisher: String;
-    updated_date: any;
-    book: any;
-    variables: any;
-    bookId: String;
-}
-
-interface BooksDataVars {
-    bookId: String;
-}
-const GET_BOOK = gql`
-  query book($bookId: String) {
-      book(id: $bookId) {
-          _id
-          isbn
-          title
-          author
-          description
-          published_year
-          publisher
-          updated_date
-      }
-  }
-`;
-
-
-
-
-const UPDATE_BOOK = gql`
-    mutation updateBook(
-        $id: String!,
-        $isbn: String!,
-        $title: String!,
-        $author: String!,
-        $description: String!,
-        $publisher: String!,
-        $published_year: Int!) {
-        updateBook(
-        id: $id,
-        isbn: $isbn,
-        title: $title,
-        author: $author,
-        description: $description,
-        publisher: $publisher,
-        published_year: $published_year) {
-            updated_date
-        }
-    }
-`;
-
-
-let isbn: any, title: any, author: any, description: any, published_year: any, publisher: any;
-
+import { toast } from 'react-toastify';
+import { BeatLoader } from "react-spinners";
+import { useCallback, useContext, useState } from 'react';
+import { AuthProvider } from 'UserContext/UserContext';
+import { useLoaderData } from 'react-router-dom';
+import { useDropzone } from 'react-dropzone';
+import { MdFileUpload } from 'react-icons/md';
+import { Helmet } from 'react-helmet';
 
 const EditBooks = () => {
-    const editData: any = useLoaderData();
+    const bookDataGet: any = useLoaderData();
+    const [book, setBook] = useState(bookDataGet);
+    const [loading, setLoading] = useState(false);
+    const { user } = useContext(AuthProvider);
+    const [bookImage, setBookImage] = useState<any>({});
+    const handleInputFeild = (event: any) => {
+        const key = event.target.name;
+        const value = event.target.value;
+        let newValue: any = { ...book };
+        newValue[key] = value;
+        setBook(newValue);
+    }
+    //image bb key 
+    const image_bb_key = process.env.REACT_APP_imageBbKey;
 
-    const { data, error } = useQuery<BooksData, BooksDataVars>(
-        GET_BOOK,
-        { variables: { bookId: editData?._id } }
-    );
+    //get form data 
+    let formData = new FormData();
+    formData.append("image", bookImage);
 
-    //
-    // Pass mutation to useMutation
-    const [updateBook, { loading }] = useMutation(UPDATE_BOOK);
-    //
+
+    const editBook = (event: any) => {
+        event.preventDefault();
+        setLoading(true);
+        const insertingData = {
+            name: user?.displayName,
+            email: user?.email,
+            profilePicture: user?.photoURL,
+            ...book,
+            date: new Date()
+        }
+        //send post data 
+        const uri = `http://localhost:4000/editBook?id=${bookDataGet._id}&email=${user?.email}`;
+
+        fetch(`https://api.imgbb.com/1/upload?key=${image_bb_key}`, {
+            method: "POST",
+            body: formData,
+        },)
+            .then(res => res.json())
+            .then(data => {
+                const bookImage = data.data?.url;
+
+                fetch(uri, {
+                    method: "PUT",
+                    headers: {
+                        "content-type": "application/json",
+                        authentication: `Bearer ${localStorage.getItem("book-store")} `,
+                    },
+                    body: JSON.stringify({ ...insertingData, bookImage: bookImage ? bookImage : bookDataGet?.bookImage })
+                })
+                    .then(res => {
+                        if (res.status === 403) {
+                            toast.warning("  😩 😩 You do have'nt access to edit this data. ");
+                            setLoading(false);
+                            return;
+                        } else {
+                            return res.json();
+                        }
+                    })
+                    .then(data => {
+                        if (data?.acknowledged) {
+                            toast.success("Congrasulation your book data updated successfully!!");
+                            setLoading(false);
+                        }
+
+                    }).catch(error => {
+                        setLoading(false);
+                        console.log(error);
+                    })
+            });
+
+    };
+    const { name }: any = bookImage;
+
+    //on drop image callback 
+    const onDrop = useCallback((acceptedFiles: any) => {
+        // Do something with the files
+        setBookImage(acceptedFiles[0])
+    }, [])
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
     return (
         <>
-            <div>
+            <Helmet> <title> Edit boook </title> </Helmet>
+            <div className="container mx-auto shadow-2xl my-12 p-9 rounded-lg" style={{ "width": "40%" }}>
+                <div className="panel">
 
-                <>
+                    <div className="panel-body">
 
-                    <div className="container">
-                        <div className="panel panel-default">
-                            <div className="flex flex-col lg:flex-row justify-between mx-10">
-                                <p className="panel-title text-info mt-5 font-extrabold">
-                                    Edit your <span className='text-white'>{data?.book.title}</span> book
-                                </p>
-                                <h4><Link to="/" className="btn btn-primary mt-5 ">Book List</Link></h4>
+                        <form onSubmit={editBook} className="pb-20">
+                            <p className="panel-title text-info my-4  font-extrabold">
+                                EDIT BOOK
+                            </p>
+                            <div className="form-control">
+                                <label className="label" htmlFor="isbn">ISBN:</label>
+                                <input type="text" className="input input-info" name="isbn"
+                                    onChange={handleInputFeild} defaultValue={`${bookDataGet?.isbn}`} placeholder="Please enter ISBN" />
                             </div>
-                            <div className="container mx-auto shadow-2xl my-12 p-9 rounded-lg" style={{ "width": "40%" }}>
-
-                                <form onSubmit={e => {
-                                    e.preventDefault();
-                                    updateBook({ variables: { id: editData._id, isbn: isbn.value, title: title.value, author: author.value, description: description.value, publisher: publisher.value, published_year: parseInt(published_year.value) } });
-                                    isbn.value = "";
-                                    title.value = "";
-                                    author.value = "";
-                                    description.value = "";
-                                    publisher.value = null;
-                                    published_year.value = "";
-                                }}>
-                                    <h2 className="panel-title text-white text-2xl my-5 font-extrabold">
-                                        EDIT BOOK
-                                    </h2>
-                                    <br />
-                                    <div className="form-control">
-                                        <label className="label">ISBN: </label>
-                                        <input type="text" className="input input-info" name="isbn" ref={node => {
-                                            isbn = node;
-                                        }} placeholder="ISBN" defaultValue={`${data?.book.isbn}`} />
-
-                                    </div>
-                                    <br />
-                                    <div className="form-control">
-                                        <label htmlFor="title" className="label">Book name:</label>
-                                        <input type="text" className="input input-info" name="title" ref={node => {
-                                            title = node;
-                                        }} placeholder="Book name" defaultValue={`${data?.book.title}`} />
-                                    </div>
-                                    <br />
-                                    <div className="form-control">
-                                        <label htmlFor="author" className="label">Author:</label>
-                                        <input type="text" className="input input-info" name="author" ref={node => {
-                                            author = node;
-                                        }} placeholder="Author" defaultValue={`${data?.book.author}`} />
-                                    </div>
-                                    <br />
-                                    <div className="form-control">
-                                        <label htmlFor="description" className="label">Description:</label>
-                                        <textarea className="input input-info h-28 p-5" name="description" ref={node => {
-                                            description = node;
-                                        }} placeholder="Description" rows={10} defaultValue={`${data?.book.description}`} />
-                                    </div>
-                                    <br />
-                                    <div className="form-control">
-                                        <label htmlFor="author" className="label">Publisher:</label>
-                                        <input type="text" className="input input-info" name="publisher" ref={node => {
-                                            publisher = node;
-                                        }} placeholder="Publisher" defaultValue={`${data?.book.publisher}`} />
-                                    </div>
-                                    <br />
-                                    <div className="form-control">
-                                        <label htmlFor="author" className="label">Published Date:</label>
-                                        <input type="text" className="input input-info" name="published_year" ref={node => {
-                                            published_year = node;
-                                        }} placeholder="Published date" defaultValue={data?.book.published_year} />
-                                    </div>
-
-                                    <button type="submit" className="btn my-7 w-56 px-14 text-white btn-success">
-                                        {
-                                            loading ? <BeatLoader color="white" /> : "Update book"
-                                        }
-                                    </button>
-                                </form>
-                                {error && <p> Message :{error?.message}</p>}
+                            <br />
+                            <div className="form-control">
+                                <label className="label" htmlFor="title">Book name:</label>
+                                <input type="text" className="input input-info" name="bookName"
+                                    defaultValue={`${bookDataGet?.bookName}`} onChange={handleInputFeild} placeholder="Please enter book name" />
                             </div>
-                        </div>
+                            <br />
+                            <div className="form-control">
+                                <label className="label" htmlFor="author">Author:</label>
+                                <input type="text" className="input input-info" name="author"
+                                    onChange={handleInputFeild} defaultValue={`${bookDataGet?.author}`}
+                                    placeholder="Please enter author name" />
+                            </div>
+                            <br />
+                            <div className="form-control">
+                                <label className="label" htmlFor="description">Description:</label>
+                                <textarea className="input h-28 input-info pt-2 pb-7 px-4"
+                                    onChange={handleInputFeild} defaultValue={`${bookDataGet?.description}`}
+                                    name="description" placeholder="Please enter book description" rows={5} />
+                            </div>
+                            <br />
+                            <div className="form-control">
+                                <label className="label" htmlFor="author">Publisher:</label>
+                                <input type="text" className="input input-info" name="publisher"
+                                    onChange={handleInputFeild} defaultValue={`${bookDataGet?.publisher}`}
+                                    placeholder="Please enter publisher name" />
+                            </div>
+                            <br />
+                            <div className="form-control">
+                                <label className="label" htmlFor="author">Published Date:</label>
+                                <input type="date" className="input input-info" name="published_year"
+                                    onChange={handleInputFeild} defaultValue={`${bookDataGet?.published_year}`}
+                                    placeholder="Please published year" />
+                            </div>
+                            <br />
+                            <div className="form-control">
+                                <label className="label" htmlFor="author">Book image :</label>
+                                <div {...getRootProps()} className="hover:cursor-pointer">
+                                    <input {...getInputProps()} />
+                                    {
+                                        isDragActive ?
+                                            <div className='border-2 border-dotted py-6 px-2 text-info rounded-md border-lime-600  text-center '>
+                                                <BeatLoader color="white" />
+                                                <p> Your book image is uploading ....  </p>
+                                            </div>
+
+                                            :
+
+                                            <div className='border-2 border-dashed py-6 px-2 rounded-md border-lime-600 '>
+                                                <MdFileUpload className='text-center text-3xl font-bold text-info
+                                                  mx-auto '></MdFileUpload>
+                                                {
+                                                    name ? <p> Your book image name is  {name}</p> :
+                                                        <>
+                                                            <p>Drag and drop your book image here or click on
+                                                                this area to select an file </p>
+                                                            <img src={bookDataGet?.bookImage ? bookDataGet?.bookImage : "https://i.ibb.co/RSCmwXf/imagenot.jpg"}
+                                                                className="h-20 w-20 rounded-full border-2 border-info mx-auto my-4" alt="book" />
+                                                        </>
+                                                }
+                                            </div>
+                                    }
+                                </div>
+                            </div>
+                            <button type="submit" className="btn my-7 w-full float-right px-14 text-white mx-auto btn-primary">
+                                {
+                                    loading ? <BeatLoader color="white" /> : "Save book"
+                                }
+                            </button>
+                        </form>
+
                     </div>
-
-                </>
-
+                </div>
             </div>
         </>
     );
-}
+};
 
 export default EditBooks;
-

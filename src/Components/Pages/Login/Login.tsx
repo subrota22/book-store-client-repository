@@ -18,9 +18,9 @@ const Login = () => {
 
   //save user information in the mongo atlas 
   const createMongoDBUser = (userData: any) => {
-    console.log("userData" , userData);
+    console.log("userData", userData);
     setLoading(true);
-    fetch("http://localhost:3562/users", {
+    fetch("http://localhost:4000/users", {
       method: "POST",
       headers: {
         'content-type': 'application/json',
@@ -48,15 +48,14 @@ const Login = () => {
   //submit form data 
   const onSubmit = (userFormData: any) => {
     //create new user email and password based 
-    console.log("userFormData", userFormData);
     setLoading(true);
     loginUser(userFormData.email, userFormData.password)
-      .then((result : any) => {
+      .then((result: any) => {
         const email = result.user.email;
         authToken(email);
         toast.success("Congratulation your are login successfully 😀 ");
         navigate("/");
-      }).catch(( error : any) => {
+      }).catch((error: any) => {
         toast.error(error.message, { position: "top-center" });
         setLoading(false);
       })
@@ -67,15 +66,15 @@ const Login = () => {
   const handleGoogleSignIn = () => {
     setLoading(true);
     googelSignIn()
-      .then(( result : any) => {
+      .then((result: any) => {
         toast.success("Congratulation your login successfully by Google 😀 ");
         navigate("/");
         const name = result?.user?.displayName;
         const email = result?.user?.email;
         const profileImage = result?.user?.photoURL;
-        const role = "Buyer";
+
         authToken(email);
-        createMongoDBUser({ name: name, email: email, profileImage: profileImage, role: role });
+        createMongoDBUser({ name: name, email: email, profileImage: profileImage, date: new Date() });
       })
       .catch(({ error }: any) => {
         if (error) { setLoading(false); toast.error(error.message); }
@@ -89,15 +88,16 @@ const Login = () => {
     toast.success("Congratulation your login successfully by Github 😀 ")
     navigate("/");
     githubSignIn()
-      .then(( result:any  ) => {
-        console.log("result" , result);
+      .then((result: any) => {
+        console.log("result", result);
         const name = result?.user?.displayName;
         const email = result?.user?.email;
         const profileImage = result?.user?.photoURL;
         authToken(email);
-        createMongoDBUser({ name: name, email: email, profileImage: profileImage });
+        createMongoDBUser({ name: name, email: email, profileImage: profileImage, date: new Date() });
+
       })
-      .catch(( error : any) => {
+      .catch((error: any) => {
         if (error) { setLoading(false) }
         toast.error(error.message);
       })
@@ -109,13 +109,13 @@ const Login = () => {
         <title>Login page </title>
       </Helmet>
 
-      <div className="hero min-h-96 my-8">
+      <div className="hero min-h-96 my-8"  >
         <div className="hero-content flex-col lg:flex-row-reverse">
-          <div>
+          <div data-aos="fade-left">
             <img src="https://i.ibb.co/yRVxQkH/register.png"
               alt="login" className='bg-base-100  h-screen w-full ' />
           </div>
-          <div className="card flex-shrink-0 w-full rounded-none max-w-lg  shadow-2xl">
+          <div className="card flex-shrink-0 w-full rounded-none max-w-lg  shadow-2xl" data-aos="fade-right">
             <form onSubmit={handleSubmit(onSubmit)} className="card-body w-full text-info">
               <h2 className='text-2xl text-center my-1 animate-pulse uppercase'>Login now !</h2>
               <div className="form-control">

@@ -4,9 +4,9 @@ import logo from "../../../assets/book_store_logo.jpg";
 const Footer = () => {
     return (
         <>
-            <footer className="footer p-10   shadow-2xl text-white">
+            <footer className="footer p-10   shadow-2xl text-white" data-aos="zoom-in">
                 <div>
-                <img src={logo} alt="logo" className='w-20   rounded-2xl'/>
+                <img src={logo} alt="logo" className='w-14 h-14 animate-pulse duration-700   rounded-full border-2 border-indigo-600 '/>
                     <p>Learn with fun.<br />Providing reliable tech since 2020</p>
                 </div>
                 <div>

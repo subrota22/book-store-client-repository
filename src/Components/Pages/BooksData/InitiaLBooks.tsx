@@ -1,10 +1,9 @@
-
+// import React from 'react';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 // import { Mutation } from 'react-apollo';
 import { useQuery } from '@apollo/react-hooks';
 import PageLoader from 'Components/Shares/PageLoader/PageLoader';
-
 
 interface BooksData {
   books: BooksData[];
@@ -37,11 +36,11 @@ const DefultBooksData = () => {
   const { loading, data } = useQuery <BooksData, BooksDataVars>(
     GET_BOOKS
   );
+//
+
 
   return (
     <>
-
-
       {loading ? (
         <PageLoader></PageLoader>
       ) : (
@@ -77,6 +76,9 @@ const DefultBooksData = () => {
 
 
       )}
+  <>
+            
+        </>
     </>
   )
 };

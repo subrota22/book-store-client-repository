@@ -12,7 +12,7 @@ import EditBooks from "../Pages/CRUD/EditBooks/EditBooks" ;
 import AllBooks from "../Pages/CRUD/EditBooks/Pagination/AllBooks" ;
 import Profile from "../Pages/Profile/Profile" ;
 import AllUsers from "../Pages/AllUsers/AllUsers" ;
-import PrivateRouter from "../../PrivaterRouters/PrivateRouter" ;
+import PrivateRouter from "../../PrivaterRouters/PrivateRouter";
 export const routers = createBrowserRouter([
     {
         path:"/", errorElement:<h2 style={{textAlign:"center" , height:"100vh", fontSize:"56px", paddingTop:"120px" , color:"red"}}> You have an error : </h2>, children:[
@@ -31,7 +31,7 @@ export const routers = createBrowserRouter([
                         path:"/my-books", element:<PrivateRouter><MyBooks></MyBooks></PrivateRouter>
                     },
                     {
-                        path:"/add-books", element:<PrivateRouter> <AddBooks></AddBooks></PrivateRouter>
+                        path:"/add-books", element:<PrivateRouter><AddBooks></AddBooks></PrivateRouter>
                     },
                     {
                         path:"/all-books", element:<AllBooks></AllBooks>
@@ -51,7 +51,7 @@ export const routers = createBrowserRouter([
                         path:"/profile", element:<PrivateRouter><Profile></Profile></PrivateRouter>
                     },
                     {
-                        path:"/our-users", element:<PrivateRouter><AllUsers></AllUsers></PrivateRouter>
+                        path:"/our-users", element:<AllUsers></AllUsers>
                     },
                     {
                      path:"/details/:id" ,   element:<ShowDetails></ShowDetails> ,

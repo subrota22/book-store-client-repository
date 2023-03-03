@@ -18,7 +18,6 @@ const Login = () => {
 
   //save user information in the mongo atlas 
   const createMongoDBUser = (userData: any) => {
-    console.log("userData", userData);
     setLoading(true);
     fetch("https://books-libarary.vercel.app/users", {
       method: "POST",
@@ -34,7 +33,7 @@ const Login = () => {
           setLoading(false);
           return;
         }
-        if (data.insertedId) {
+        if (data.acknowledged) {
           setLoading(false);
           toast.success("Congratulation your account was created successfully 😀 ");
           navigate("/");
@@ -51,9 +50,12 @@ const Login = () => {
     setLoading(true);
     loginUser(userFormData.email, userFormData.password)
       .then((result: any) => {
-        const email = result.user.email;
+        const name = result?.user?.displayName;
+        const email = result?.user?.email;
+        const profileImage = result?.user?.photoURL;
         authToken(email);
         toast.success("Congratulation your are login successfully 😀 ");
+        createMongoDBUser({ name: name, email: email, profileImage: profileImage, date: new Date() });
         navigate("/");
       }).catch((error: any) => {
         toast.error(error.message, { position: "top-center" });

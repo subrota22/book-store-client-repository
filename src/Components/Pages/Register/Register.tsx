@@ -58,7 +58,7 @@ const Register = () => {
                     setLoading(false);
                     return;
                 }
-                if (data.insertedId) {
+                if (data.acknowledged) {
                     setLoading(false);
                     toast.success("Congratulation your account was created successfully 😀 ");
                     verifyEmailAddress();
@@ -85,17 +85,16 @@ const Register = () => {
         },)
             .then(res => res.json())
             .then(data => {
-                const profileImage = data.data?.url;
+                const imageBbImage = data.data?.url;
                 createUser(userFormData.email, userFormData.password)
                     .then((result: any) => {
-                        const email = result.user.email;
+                        const name = result?.user?.displayName;
+                        const email = result?.user?.email;
                         authToken(email);
-                        updateUserProfile(userFormData.name, profileImage)
+                        updateUserProfile(userFormData.name, imageBbImage)
                             .then(() => {
                                 navigate("/");
-                                const { name, email, profileImage }: any = userFormData;
-                                createMongoDBUser({ name: name, email: email, profileImage: profileImage, date: new Date() });
-
+                                createMongoDBUser({ name: name, email: email, profileImage: imageBbImage, date: new Date() });
                             }).catch((error: any) => {
                                 toast.error(error.message, { position: "top-center" });
                                 setLoading(false);
